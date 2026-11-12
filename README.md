@@ -19,6 +19,13 @@ and project settings), and the same design is published as
 R7FA2E1AxxxFJ (LQFP-32), a 24 MHz crystal, a USB-C connector, one LED on P201
 and one button.
 
+The physical board carries an **R7FA2E1A5** (32 KB flash). The A5, A7 and A9
+parts differ only in flash size (32, 64 and 128 KB, all with the same 16 KB
+of RAM and the same peripherals), so one device header and one SVD cover the
+family: the build links the 32 KB memory map from
+`contrib/platform/lib/R7FA2E1A5.ld`, while the debug configuration and the
+SVD name the A9. The mismatch is intentional, not a copy-paste slip.
+
 Renesas documentation lives in [doc/vendor/](doc/vendor).
 
 ## Repository layout
