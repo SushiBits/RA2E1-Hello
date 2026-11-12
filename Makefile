@@ -42,11 +42,11 @@ WARNFLAGS := -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unuse
 GENFLAGS := -ffunction-sections -fdata-sections
 DEPFLAGS := -MMD -MP
 
-CPPFLAGS := $(addprefix -I, $(HEADER_PATHS)) -DSTM32F042x6 -DHSE_VALUE=12000000
+CPPFLAGS := $(addprefix -I, $(HEADER_PATHS)) -DHSE_VALUE=24000000
 CFLAGS := $(CPUFLAGS) -std=gnu17 $(DEPFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
 CXXFLAGS := $(CPUFLAGS) -std=gnu++17 $(DEPFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
 ASFLAGS := $(CPUFLAGS) $(DEPFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
-LDFLAGS := $(CPUFLAGS) $(addprefix -L, $(LIB_PATHS)) -Wl,-T$(MEMORY_LD).ld -Wl,-Tdap042.ld -Wl,--gc-sections # Platform code include a linker script fragment.
+LDFLAGS := $(CPUFLAGS) $(addprefix -L, $(LIB_PATHS)) -Wl,-Tra2e1-hello.ld -Wl,--gc-sections # Platform code include a linker script fragment.
 
 all: headers $(TARGET)
 hex: $(TARGET_HEX)

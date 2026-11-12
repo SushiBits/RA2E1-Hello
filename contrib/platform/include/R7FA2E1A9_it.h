@@ -15,7 +15,7 @@ __BEGIN_DECLS
 
 extern vector_t vector[];
 
-#define IRQN_HANDLER(idx, name) void name##_IRQNHandler(void);
+#define IRQN_HANDLER(idx, name) void name##_IRQHandler(void);
 #define SKIP_HANDLER(idx)
 #include "R7FA2E1A9_handlers.h"
 #undef IRQN_HANDLER
