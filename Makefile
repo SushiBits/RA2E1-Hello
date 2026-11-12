@@ -1,4 +1,4 @@
-#!/usr/bin/make -F
+#!/usr/bin/make -f
 TARGET := ra2e1-hello.elf
 TARGET_HEX := $(TARGET:.elf=.ihx)
 TARGET_BIN := $(TARGET:.elf=.bin)
