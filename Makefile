@@ -1,15 +1,10 @@
 #!/usr/bin/make -F
-TARGET := dap042.elf
+TARGET := ra2e1-hello.elf
 TARGET_HEX := $(TARGET:.elf=.ihx)
 TARGET_BIN := $(TARGET:.elf=.bin)
 TARGETS := $(TARGET) $(TARGET_HEX) $(TARGET_BIN)
 
 BUILD_DIR := .build
-
-# Device memory map, linked before dap042.ld. Defaults to the 16 KiB part that
-# ships, so an over-size build fails here instead of on the production units.
-# Use `make MEMORY_LD=stm32f042x6` for the 32 KiB development board.
-MEMORY_LD ?= stm32f042x4
 
 ARCH := arm-none-eabi-
 CC := $(ARCH)gcc
@@ -21,10 +16,16 @@ CXXLD := $(CXX)
 OBJCOPY := $(ARCH)objcopy
 SIZE := $(ARCH)size
 
-GENHDRS := $(patsubst %.h,%_handlers.h,$(wildcard contrib/platform/include/stm32f0??x?.h))
+SVDCONV_PATH := C:\Keil_v5\UV4
+SVDCONV := $(SVDCONV_PATH)/SVDConv.exe
+
+SVD_FILES := $(wildcard contrib/platform/share/*.svd)
+DEV_HEADERS := $(patsubst %.svd,%.h,$(subst /share/,/include/,$(SVD_FILES)))
+DEV_HANDLERS := $(DEV_HEADERS:%.h=%_handlers.h)
+GENHDRS := $(DEV_HEADERS) $(DEV_HANDLERS)
 
 SRC_PATHS := src contrib/libusb_stm32/src contrib/platform/src
-HEADER_PATHS := include contrib/libusb_stm32/inc contrib/platform/include contrib/cmsis/CMSIS/Core/Include
+HEADER_PATHS := include contrib/platform/include contrib/cmsis/CMSIS/Core/Include
 LIB_PATHS := lib contrib/platform/lib
 
 C_FILES := $(wildcard $(addsuffix /*.c, $(SRC_PATHS)))
@@ -35,7 +36,7 @@ SRC_FILES := $(C_FILES) $(CXX_FILES) $(S_FILES)
 OBJS := $(addprefix $(BUILD_DIR)/, $(addsuffix .o, $(SRC_FILES)))
 DEPS := $(OBJS:.o=.d)
 
-CPUFLAGS := -mcpu=cortex-m0 -mthumb
+CPUFLAGS := -mcpu=cortex-m23 -mthumb
 OPTFLAGS := -Og -g3
 WARNFLAGS := -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function
 GENFLAGS := -ffunction-sections -fdata-sections
@@ -60,8 +61,11 @@ size: $(TARGET)
 	@echo
 	$(SIZE) -A $<
 
+contrib/platform/include/%.h: contrib/platform/share/%.svd
+	-$(SVDCONV) $< -o $(dir $@) --generate=header --fields=macro --fields=enum
+
 contrib/platform/include/%_handlers.h: contrib/platform/include/%.h
-	bash contrib/platform/share/irqn.sh "\"stm32f0xx_it.h\"" < $< > $@
+	python3 contrib/platform/share/irqn.py "\"R7FA2E1A9_it.h\"" -i $< -o $@
 
 $(BUILD_DIR)/%.c.o: %.c $(GENHDRS)
 	@mkdir -p $(dir $@)
