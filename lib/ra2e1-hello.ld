@@ -28,6 +28,18 @@ SECTIONS
         PROVIDE(__vector_end__ = .);
 	} > IRAM AT > IROM
 	
+    /* Option bytes live at a fixed address (OPTIONS peripheral, 0x0000_0400).
+     *
+     * The address has to be attached to the output section itself: a bare
+     * `. = 0x00000400' statement only moves the location counter of the
+     * default memory region, and a section assigned to a named region (IROM)
+     * is placed at that region's allocation cursor instead.
+     */
+    .config 0x00000400 :
+	{
+		KEEP(*(.config))
+    } > IROM
+    
 	/* Now comes the bulk of the application code in Flash. */
 	.text :
 	{
